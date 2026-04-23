@@ -5,5 +5,5 @@ metadata:
 data:
   config.json: |
     {
-      "message": "Mathys était en retard !"
+      "message": "Test de redemarrage reussi"
     }
