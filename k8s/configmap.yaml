@@ -5,5 +5,5 @@ metadata:
 data:
   config.json: |
     {
-      "message": "Test de redemarrage reussi !"
+      "message": "Test finale Argocd"
     }
