@@ -1,0 +1,41 @@
+# 1. Définition de la Gateway (Le point d'entrée)
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: mon-app-gateway
+spec:
+  gatewayClassName: istio # Ou le nom de ton contrôleur (ex: nginx, standard)
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    allowedRoutes:
+      namespaces:
+        from: All
+
+---
+# 2. Définition de la Route (Le panneau de direction)
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: app-routing
+spec:
+  parentRefs:
+  - name: mon-app-gateway
+  hostnames:
+  - [cite_start]"monapp.local" # Le nom d'hôte unique 
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        [cite_start]value: /api # Tout ce qui commence par /api va vers la 2nde app [cite: 23, 26]
+    backendRefs:
+    - name: node-app-api-service
+      port: 80
+  - matches:
+    - path:
+        type: PathPrefix
+        [cite_start]value: / # Tout le reste (/) va vers l'app principale [cite: 23, 25]
+    backendRefs:
+    - name: node-app-service
+      port: 80

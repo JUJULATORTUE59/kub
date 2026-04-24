@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mon-app-api
+  labels:
+    app: api-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-app
+  template:
+    metadata:
+      labels:
+        app: api-app
+    spec:
+      containers:
+      - name: mon-app-container
+        image: mon-app-k8s:v1
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: DB_PASSWORD
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config/config.json
+          subPath: config.json
+      volumes:
+      - name: config-volume
+        configMap:
+          name: app-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ap-app-service
+spec:
+  selector:
+    app: api-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
