@@ -5,5 +5,5 @@ metadata:
 data:
   config.json: |
     {
-      "message": "Test finale Argocd"
+      "message": "Env de DEV"
     }
