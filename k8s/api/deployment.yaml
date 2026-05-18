@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mon-app-api
+  name: node-app-api
+  namespace: default # On s'assure d'être dans le même namespace que la Gateway
   labels:
     app: api-app
 spec:
@@ -23,12 +24,12 @@ spec:
         - name: DB_USER
           valueFrom:
             secretKeyRef:
-              name: app-secrets
+              name: app-secrets-api # Ajusté selon le nom vu dans tes logs d'erreur ArgoCD
               key: DB_USER
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: app-secrets
+              name: app-secrets-api # Ajusté selon le nom vu dans tes logs d'erreur ArgoCD
               key: DB_PASSWORD
         volumeMounts:
         - name: config-volume
@@ -37,12 +38,13 @@ spec:
       volumes:
       - name: config-volume
         configMap:
-          name: app-config
+          name: app-config # Doit correspondre au metadata.name du configmap de ton dossier /api
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: ap-app-service
+  name: node-app-api-service # <-- TRÈS IMPORTANT : Doit correspondre EXACTEMENT au backendRefs de ta gateway
+  namespace: default
 spec:
   selector:
     app: api-app
@@ -50,4 +52,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 3000
-  type: LoadBalancer
+  type: ClusterIP # <-- CHANGÉ : C'est la Gateway qui gère l'exposition, pas besoin de LoadBalancer ici !

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-app-api-service
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: node-app-api # <--- Doit correspondre exactement au label dans ton deployment.yaml de l'api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
